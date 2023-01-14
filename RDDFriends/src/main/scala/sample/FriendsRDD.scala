@@ -29,6 +29,15 @@ object FriendsRDD {
     val lines = sc.textFile("D:\\Code\\Scala\\SparkAndScala\\Datasets\\fakefriends-noheader.csv")
 
     val rdd = lines.map(parseMyLines)
+
+
+    val totalByAge = rdd.mapValues(x => (x,1)).reduceByKey((x,y) => (x._1 + y._1, x._2 + y._2 ))
+
+    val avgsByAge = totalByAge.mapValues(x => x._1/x._2)
+
+    val results = avgsByAge.collect()
+
+    results.sorted.foreach(println)
   }
 
 
