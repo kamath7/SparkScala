@@ -19,6 +19,8 @@ object WordCounter {
     val lowerCaseWords = words.map(x => x.toString().toLowerCase())
     val wordCount = lowerCaseWords.countByValue()
 
-    wordCount.foreach(println)
+    val sortedWordCount = wordCount.toSeq.sortBy(_._2)
+
+    sortedWordCount.foreach(println)
   }
 }
