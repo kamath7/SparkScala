@@ -22,6 +22,12 @@ object CommerceRDD {
     val custOrders = lines.map(parseLines)
 
     val custOrdersTotal = custOrders.reduceByKey((x,y) => x + y)
-    custOrdersTotal.collect().foreach(println)
+    val sortedOrders = custOrdersTotal.collect().toSeq.sortBy(-_._2)
+
+    for (aggTotal <- sortedOrders){
+      val custId = aggTotal._1
+      val totalSpent = aggTotal._2.formatted("%.2f")
+      println(s"${custId} spent  ${totalSpent} dollars")
+    }
   }
 }
