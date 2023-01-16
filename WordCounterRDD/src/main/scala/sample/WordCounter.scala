@@ -17,10 +17,18 @@ object WordCounter {
 
 
     val lowerCaseWords = words.map(x => x.toString().toLowerCase())
-    val wordCount = lowerCaseWords.countByValue()
+    val wordCounts = lowerCaseWords.map(x => (x,1)).reduceByKey((x,y) => x+y)
 
-    val sortedWordCount = wordCount.toSeq.sortBy(_._2)
+    val wordCountsSorted = wordCounts.map(x => (x._2, x._1)).sortByKey()
 
-    sortedWordCount.foreach(println)
+    for (result <- wordCountsSorted){
+      println(s"${result._1} -> ${result._2}")
+    }
+
+//    val wordCount = lowerCaseWords.countByValue()
+//
+//    val sortedWordCount = wordCount.toSeq.sortBy(_._2)
+//
+//    sortedWordCount.foreach(println)
   }
 }
