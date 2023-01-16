@@ -13,9 +13,11 @@ object WordCounter {
 
     val inp = sc.textFile("D:\\Code\\Scala\\SparkAndScala\\Datasets\\book.txt")
 
-    val words = inp.flatMap(x => x.split(" ")) //get individual words
+    val words = inp.flatMap(x => x.split("\\W+")) //get individual words
 
-    val wordCount = words.countByValue()
+
+    val lowerCaseWords = words.map(x => x.toString().toLowerCase())
+    val wordCount = lowerCaseWords.countByValue()
 
     wordCount.foreach(println)
   }
