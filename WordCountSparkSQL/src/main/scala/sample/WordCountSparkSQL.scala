@@ -22,6 +22,10 @@ object WordCountSparkSQL {
 
     val wordCounts = lowerCaseWords.groupBy("word").count()
 
+    val wordCountsSorted = wordCounts.sort("count")
+
+    wordCountsSorted.show(wordCountsSorted.count.toInt)
+
 
   }
 }
