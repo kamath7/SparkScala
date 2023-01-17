@@ -21,6 +21,20 @@ object AnotherImplementation {
     people.printSchema()
 
 
+    people.select("name").show()
 
+    println("------------------")
+
+    people.filter(people("age") < 21).show()
+
+    println(" ----------------- ")
+
+    people.groupBy("age").count().show()
+
+    println(" ----------------- ")
+
+    people.select(people("name"), people("age") + 10).show()
+
+    spark.stop()
   }
 }
