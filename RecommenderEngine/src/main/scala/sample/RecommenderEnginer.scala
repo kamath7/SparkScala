@@ -39,6 +39,13 @@ object RecommenderEnginer {
     result
   }
 
+  def getMovieName(movieNames: Dataset[MoviesNames], movieId: Int): String = {
+    val result = movieNames.filter(col("movieID") === movieId)
+      .select("movieTitle").collect()(0)
+
+    result(0).toString
+  }
+
   def main(args: Array[String]) = {
     Logger.getLogger("org").setLevel(Level.ERROR)
 
@@ -85,5 +92,30 @@ object RecommenderEnginer {
 
     val moviePairsSimilarities = computeCosineSimilarity(spark, moviePairs).cache()
 
+    if(args.length > 0){
+      val scoreThreshold = 0.97
+      val coOccurenceThreshold = 50.0
+
+      val movieID: Int = args(0).toInt
+
+      val filterResults = moviePairsSimilarities.filter(
+        (col("movie1") === movieID || col("movie2") === movieID) &&
+          col("score") > scoreThreshold && col("numPairs") > coOccurenceThreshold
+      )
+
+      val results = filterResults.sort(col("score").desc).take(10)
+
+      println("Top 10 similar movies for "+getMovieName(movieNames, movieID))
+
+      for (result <- results){
+
+        var similarMovieID = result.movie1
+        if (similarMovieID == movieID) {
+          similarMovieID = result.movie2
+        }
+
+        println(getMovieName(movieNames, similarMovieID) + "\t Score -> "+result.score+" \t Strength -> "+result.numPairs)
+      }
+    }
   }
 }
