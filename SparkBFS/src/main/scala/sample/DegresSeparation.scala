@@ -6,6 +6,7 @@ import org.apache.spark.rdd.RDD
 import org.apache.spark.util.LongAccumulator
 
 import scala.collection.mutable.ArrayBuffer
+import scala.sys.exit
 
 object DegresSeparation {
 
@@ -153,15 +154,32 @@ object DegresSeparation {
 
     hitCounter = Some(sc.longAccumulator("Hit Counter"))
 
-    var iterationRDD = createStartingRdd(sc)
+    var iterationRdd = createStartingRdd(sc)
 
     for (iteration <- 1 to 10) {
-      println("Running BFS at "+iteration)
+      println("Running BFS Iteration# " + iteration)
 
-      val mapped = iterationRDD.flatMap(bfsMap)
+      // Create new vertices as needed to darken or reduce distances in the
+      // reduce stage. If we encounter the node we're looking for as a GRAY
+      // node, increment our accumulator to signal that we're done.
+      val mapped = iterationRdd.flatMap(bfsMap)
 
-      println("Processiong "+mapped.count() + "values")
+      // Note that mapped.count() action here forces the RDD to be evaluated, and
+      // that's the only reason our accumulator is actually updated.
+      println("Processing " + mapped.count() + " values.")
 
+      if (hitCounter.isDefined) {
+        val hitCount = hitCounter.get.value
+        if (hitCount > 0) {
+          println("Hit the target character! From " + hitCount +
+            " different direction(s).")
+          exit
+        }
+      }
+
+      // Reducer combines data for each character ID, preserving the darkest
+      // color and shortest path.
+      iterationRdd = mapped.reduceByKey(bfsReduce)
     }
   }
 
