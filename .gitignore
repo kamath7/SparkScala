@@ -4,6 +4,7 @@
 .metals
 project/metals.sbt
 
+twitter.txt
 # vs code
 .vscode
 
