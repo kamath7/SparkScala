@@ -16,7 +16,7 @@ object StructuredStreaming {
       .master("local[*]")
       .getOrCreate()
 
-    val accessLines = spark.readStream.text("D:\\Code\\Scala\\SparkAndScala\\Datasets\\access_log.txt")
+    val accessLines = spark.readStream.text("D:\\Code\\Scala\\SparkAndScala\\Datasets\\data\\logs")
 
     val contentSizeExp = "\\s(\\d+)$"
     val statusExp = "\\s(\\d{3})\\s"
